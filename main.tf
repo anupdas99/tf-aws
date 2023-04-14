@@ -73,7 +73,7 @@ resource "aws_security_group" "http" {
 
 # create key pair
 
-resource "tls_private_key" "tls_key_pair" {
+resource "tls_private_key" "my_keypair" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
@@ -81,14 +81,14 @@ resource "tls_private_key" "tls_key_pair" {
 # create key pair
 
 resource "aws_key_pair" "my_keypair" {
-  key_name   = "my_public_keypair"
-  public_key = tls_private_key.tls_key_pair.public_key_openssh
+  key_name   = "my_keypair"
+  public_key = tls_private_key.my_keypair.public_key_openssh
 }
 
 # create pem file
 
-resource "local_file" "private_keypair_file" {
-  content         = tls_private_key.tls_key_pair.private_key_pem
+resource "local_file" "my_keypair" {
+  content         = tls_private_key.my_keypair.private_key_pem
   filename        = "my_keypair.pem"
   file_permission = "0400"
 }

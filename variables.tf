@@ -21,11 +21,6 @@ variable "instance_name" {
   type        = string
   default     = "ExampleAppServerInstance"
 }
-variable "key-pair" {
-  description = "Value of AWS SSH key-pair name"
-  type        = string
-  default     = "local-key-pair"
-}
 
 variable "vpc" {
   description = "Value of VPC"
