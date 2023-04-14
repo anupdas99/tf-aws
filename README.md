@@ -29,3 +29,9 @@ This Terraform project has the following outputs:
 
 output_name: A description of the output.
 The outputs will be displayed after running `terraform apply`.
+
+### To check AWS EC2 startup logs
+
+1. SSH into the EC2 instance.
+2. Check the /var/log/cloud-init-output.log file for logs related to the instance startup process.
+

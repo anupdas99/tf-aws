@@ -7,7 +7,7 @@ variable "region" {
 variable "instance_type" {
   type        = string
   description = "The type of instance to use for the servers."
-  default     = "t2.micro"
+  default     = "t2.nano"
 }
 
 variable "ami" {
@@ -26,3 +26,10 @@ variable "key-pair" {
   type        = string
   default     = "local-key-pair"
 }
+
+variable "vpc" {
+  description = "Value of VPC"
+  type        = string
+  default     = "vpc-186c0860"
+}
+

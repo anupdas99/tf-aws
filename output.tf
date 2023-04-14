@@ -1,16 +1,16 @@
 output "instance_id" {
   description = "ID of the EC2 instance"
-  value       = aws_instance.example_instance.id
+  value       = aws_instance.http_instance.id
 }
 
 output "instance_public_ip" {
   description = "Public IP address of the EC2 instance"
-  value       = aws_instance.example_instance.public_ip
+  value       = aws_instance.http_instance.public_ip
 }
 
 output "instance_public_DNS" {
   description = "Public IP address of the EC2 instance"
-  value       = aws_instance.example_instance.public_dns
+  value       = aws_instance.http_instance.public_dns
 }
 
 /*

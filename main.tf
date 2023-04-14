@@ -1,35 +1,34 @@
-
 # Create a VPC
-resource "aws_vpc" "example_vpc" {
+/*resource "aws_vpc" "example_vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
     Name = "example-vpc"
   }
-}
+}*/
 
 # Create a Subnet
-resource "aws_subnet" "example_subnet" {
-  vpc_id     = aws_vpc.example_vpc.id
+/*resource "aws_subnet" "example_subnet" {
+  vpc_id     = var.vpc
   cidr_block = "10.0.1.0/24"
 
   tags = {
     Name = "example-subnet"
   }
-}
+}*/
 
 # Create an Internet Gateway
-resource "aws_internet_gateway" "example_igw" {
-  vpc_id = aws_vpc.example_vpc.id
+/*resource "aws_internet_gateway" "example_igw" {
+  vpc_id = var.vpc
 
   tags = {
     Name = "example-igw"
   }
-}
+}*/
 
 # Create a Route Table
-resource "aws_route_table" "example_rt" {
-  vpc_id = aws_vpc.example_vpc.id
+/*resource "aws_route_table" "example_rt" {
+  vpc_id = var.vpc
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -39,23 +38,23 @@ resource "aws_route_table" "example_rt" {
   tags = {
     Name = "example-rt"
   }
-}
+}*/
 
 # Create a Security Group
-resource "aws_security_group" "example_sg" {
+resource "aws_security_group" "http" {
   name_prefix = "example-sg-"
-  vpc_id = aws_vpc.example_vpc.id
+  vpc_id      = var.vpc
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -68,39 +67,38 @@ resource "aws_security_group" "example_sg" {
   }
 
   tags = {
-    Name = "example-sg"
+    Name = "http-sg"
   }
 }
 
 # create key pair
 
-resource "tls_private_key" "example_keypair" {
+resource "tls_private_key" "tls_key_pair" {
   algorithm = "RSA"
-  rsa_bits = 2048
+  rsa_bits  = 2048
 }
 
 # create key pair
 
-resource "aws_key_pair" "example_keypair" {
-  key_name = "example_keypair"
-  public_key = tls_private_key.example_keypair.public_key_openssh
+resource "aws_key_pair" "my_keypair" {
+  key_name   = "my_public_keypair"
+  public_key = tls_private_key.tls_key_pair.public_key_openssh
 }
 
 # create pem file
 
-resource "local_file" "example_keypair_file" {
-  content  = tls_private_key.example_keypair.private_key_pem
-  filename = "example_keypair.pem"
-  file_permission = "0600"
+resource "local_file" "private_keypair_file" {
+  content         = tls_private_key.tls_key_pair.private_key_pem
+  filename        = "my_keypair.pem"
+  file_permission = "0400"
 }
 
 # Launch an EC2 instance
-resource "aws_instance" "example_instance" {
-  ami           = var.ami
-  instance_type = var.instance_type
-  key_name      = "example_keypair"
-  subnet_id     = aws_subnet.example_subnet.id
-  vpc_security_group_ids = [aws_security_group.example_sg.id]
+resource "aws_instance" "http_instance" {
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = "my_keypair"
+  vpc_security_group_ids = [aws_security_group.http.id]
 
   # Attach an Elastic IP Address to the instance
   associate_public_ip_address = true
@@ -108,13 +106,14 @@ resource "aws_instance" "example_instance" {
   # Use the userdata script to install Apache web server
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
+              sudo apt-get update -y
+              sudo apt-get install -y apache2
+              sudo service apache2 start
+              sudo service apache2 status
+              echo "<h1>Server-Name</h1><p>This is my HTTP server</p>" > /var/www/html/index.html
               EOF
 
   tags = {
-    Name = "example-instance"
+    Name = "web-instance"
   }
 }
