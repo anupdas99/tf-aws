@@ -25,6 +25,6 @@ variable "instance_name" {
 variable "vpc" {
   description = "Value of VPC"
   type        = string
-  default     = "vpc-186c0860"
+  default     = "vpc-example"
 }
 
